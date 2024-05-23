@@ -26,7 +26,7 @@ const signin = async (req , res , next) => {
         const isCorrect = await bcrypt.compare(req.body.password, user.password);
         if (!isCorrect) return next(new Error('Wrong credentials'));
     
-        const token = jwt.sign({ id: user._id }, 'Just A litlle Secret');
+        const token = jwt.sign({ id: user._id }, 'Just A litlle Secret' , {expiresIn : "1 day"});
         
         const {password , ...others} = user._doc
 
@@ -35,8 +35,8 @@ const signin = async (req , res , next) => {
           secure: true,
           sameSite: 'strict'
         });
-
-    
+        
+        console.log(req.user);
         res.status(200).send(others); // More informative message
       } catch (err) {
         next(err);

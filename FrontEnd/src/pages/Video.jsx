@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
@@ -6,6 +6,11 @@ import ShareIcon from '@mui/icons-material/Share';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import Comments from '../components/Comments';
 import Card from '../components/Card';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { fetchSuccess } from '../redux/videoSlice';
+import { format } from 'timeago.js';
 const Container = styled.div`
   display: flex;
   gap: 24px;
@@ -121,17 +126,44 @@ const Subscribe = styled.div`
 
 
 function Video() {
+  const { user } = useSelector(state => state.user);
+  const { currentVideo } = useSelector(state => state.video); 
+  
+  const dispatch = useDispatch();
+  
+  const path = useLocation().pathname.split("/")[2];
+
+
+  const [channel , setChannel] = useState({});
+
+  useEffect( () => {
+    const fetchData = async () => {
+      try{
+        const videoRes = await axios.get(`http://localhost:8080/api/video/664f696eb14ba252cd10ff66`)
+        const channelRes = await axios.get(`/users/${videoRes.data.userId}`);
+        
+        dispatch(fetchSuccess(videoRes.data));
+        setChannel(channelRes.data);
+      }
+      catch(e){
+        console.log(e);
+      }
+    }
+
+    fetchData()
+  } , [path , dispatch])
+
   return (
     <Container>
       <Content>
         <VideoWrapper>
         <iframe width="100%" height='600px' src="https://www.youtube.com/embed/yIaXoop8gl4?si=GnuWeHf6YATSJ9Rb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </VideoWrapper>
-        <Title>Dragon Video</Title>
+        <Title>{currentVideo?.title}</Title>
         <Details>
-          <Info>7,948,154 views Jun 22 , 2022</Info>
+          <Info>{currentVideo.views} views ,  Posted   {format(currentVideo.createdAt)}</Info>
           <Buttons>
-            <Button><ThumbUpIcon/> 123</Button>
+            <Button><ThumbUpIcon/> {currentVideo.likes?.length}</Button>
             <Button><ThumbDownIcon/> Dislike</Button>
             <Button><ShareIcon></ShareIcon></Button>
             <Button><BookmarkIcon/>Save</Button>
@@ -140,10 +172,10 @@ function Video() {
         <Hr/>
        <Channel>
         <ChannelInfo>
-          <Image src='https://marketplace.canva.com/EAFcyEtxbGA/1/0/1600w/canva-black-and-red-modern-gaming-youtube-channel-logo-onRlchjOY2w.jpg'/>
+          <Image src={channel.img}/>
           <ChannelDetail>
-            <ChannelName>Dragon Slayer</ChannelName>
-            <ChannelCounter>200k Subscribers</ChannelCounter>
+            <ChannelName>{channel.name}</ChannelName>
+            <ChannelCounter>{channel.subscribers} Subscribers</ChannelCounter>
             <Description>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto, neque.
             </Description>
@@ -157,7 +189,7 @@ function Video() {
      
 
 
-      <Recommendation>
+      {/* <Recommendation>
         <Card type='sm'/>
         <Card type='sm'/>
         <Card type='sm'/>
@@ -167,7 +199,7 @@ function Video() {
         <Card type='sm'/>
         <Card type='sm'/>
         <Card type='sm'/>
-      </Recommendation>
+      </Recommendation> */}
 
 
     </Container>

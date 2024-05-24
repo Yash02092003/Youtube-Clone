@@ -8,6 +8,10 @@ const VideoSchema = new Schema({
         type : String ,
         required : true
     } ,
+    title : {
+        type : String ,
+        default : ""
+    } ,
     desc : {
         type : String ,
         required : true

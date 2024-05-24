@@ -1,24 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const { addVideo , deleteVideo , updateVideo , getVideo, addView, trend, sub , random} = require('../controllers/videoController');
+const { addVideo , deleteVideo , updateVideo , getVideo, addView, trend, sub , random, getByTag, search} = require('../controllers/videoController');
 const verifyToken = require('../verifyToke');
 const validateObjectId = require('../validateObjectId');
 
-router.post('/video/new' , verifyToken , addVideo);
+router.post('/api/video/new' , verifyToken , addVideo);
 
-router.get('/video/:id' , validateObjectId , getVideo);
+router.get('/api/video/:id' , validateObjectId , getVideo);
 
-router.delete('/video/:id' , verifyToken , validateObjectId , deleteVideo);
+router.delete('/api/video/:id' , verifyToken , validateObjectId , deleteVideo);
 
-router.patch('/video/:id' , verifyToken , validateObjectId , updateVideo);
+router.patch('/api/video/:id' , verifyToken , validateObjectId , updateVideo);
 
-router.patch('/video/view/:id' ,validateObjectId , addView)
+router.patch('/api/video/view/:id' ,validateObjectId , addView)
 
-router.get('/videos/trend' , trend);
+router.get('/api/videos/trend' , trend);
 
-router.get('/videos/random' , random);
+router.get('/api/videos/random' , random);
 
-router.get('/videos/sub' , sub);
+router.get('/api/videos/sub' , sub);
+
+router.get('/api/videos/tags' , getByTag);
+
+router.get('/api/videos/title' , search);
 
 
 module.exports = router;

@@ -9,6 +9,10 @@ const videoRouter = require('./routes/video');
 const authRouter = require('./routes/auth');
 const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
+
+
+
 
 dotenv.config()
 
@@ -20,12 +24,14 @@ mongoose.connect(process.env.MONGO)
     console.log(`Error Connecting DB ${e}`)
 })
 
-
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 app.use(cookieParser());
 
-
+app.get('/' , (req , res) => {
+    res.send('Server Connected Successfully')
+})
 
 app.use(userRouter);
 app.use(commentRouter);

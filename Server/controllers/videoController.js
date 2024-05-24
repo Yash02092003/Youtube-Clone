@@ -74,6 +74,7 @@ const addView = async(req , res , next) => {
 const random = async (req , res , next) => {
     try{
         const video = await Video.aggregate([{ $sample : {size : 40} }]);
+        console.log('Hello');
         res.status(200).json(video);
     }
     catch(e){
@@ -101,11 +102,32 @@ const sub = async (req , res , next) => {
             })
         )
 
-        res.status(200).json(subs);
+        res.status(200).json(list.flat().sort((a , b) => b.createdAt - a.createdAt));
     }
     catch(e){
         next(e);
     }
 }
 
-module.exports ={addVideo , updateVideo , deleteVideo , getVideo , addView , trend , random , sub}
+const getByTag = async (req , res , next) => {
+    const tags = req.query.tags.split(",");
+    try{
+        const videos = await Video.find({tags : {$in : tags}}).limit(20);
+        res.status(200).json(videos)
+    }
+    catch(e){
+        next(e);
+    }
+}
+const search = async (req , res , next) => {
+    const query = req.query.q
+    try{
+        const videos = await Video.find({title : {$regex : query , $options : "i"}}).limit(200);
+        res.status(200).json(videos);
+    }
+    catch(e){
+        next(e);
+    }
+}
+
+module.exports ={addVideo , updateVideo , deleteVideo , getVideo , addView , trend , random , sub , getByTag , search};

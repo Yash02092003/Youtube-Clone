@@ -3,11 +3,11 @@ const router = express.Router();
 const { signup, signin } = require('../controllers/authController');
 
 // Create A User
-router.post('/signup' , signup);
+router.post('/api/signup' , signup);
 
 
 // SIGN IN
-router.post('/signin' , signin)
+router.post('/api/signin' , signin)
 
 
 

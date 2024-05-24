@@ -1,6 +1,8 @@
-import React from 'react'
+import axios from 'axios'
+import React, { useState , useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { format } from 'timeago.js'
 
 const Container = styled.div`
     width: ${(props) => props.type !== 'sm' && '360px'};
@@ -54,17 +56,28 @@ const Info = styled.div`
     color: ${({theme}) => theme.textSoft};
                 `;
 
-function Card({type}) {
+function Card({type , video}) {
+  const [user , setUser] = useState({});
+  console.log(video);
+  
+  useEffect( () => {
+    const fetchUser = async () => {
+        const res = await axios.get(`http://localhost:8080/api/users/${video.userId}`);
+        setUser(res.data);
+    }
+
+    fetchUser();
+  } , [video.userId])
   return (
     <Link to='/video/test' style={{textDecoration : 'none'}}>
     <Container type={type}>
-        <Img type={type} src='https://imgv3.fotor.com/images/videoImage/create-various-bridal-shower-invitation-with-fotor-copy.jpg'/>
+        <Img type={type} src={video.imgURL}/>
         <Details type={type}>
-            <ChannelImage type={type} src='https://marketplace.canva.com/EAFcyEtxbGA/1/0/1600w/canva-black-and-red-modern-gaming-youtube-channel-logo-onRlchjOY2w.jpg'/>
+            <ChannelImage type={type} src={user.img}/>
             <Texts>
-                <Title>Test Video</Title>
-                <ChannelName>Dragon Slayer</ChannelName>
-                <Info>660,908 views</Info>
+                <Title>{video.title}</Title>
+                <ChannelName>{user.name}</ChannelName>
+                <Info>{video.views} views {format(video.createdAt)}</Info>
             </Texts>
         </Details>
     </Container>

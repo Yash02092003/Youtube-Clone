@@ -1,5 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { loginFailure, loginStart, loginSuccess } from '../redux/userSlice';
+import { store } from '../redux/store';
 
 
 const Container = styled.div`
@@ -66,18 +70,38 @@ const Link = styled.span`
 `
 
 function Login() {
+    const [name , setName] = useState("");
+    const [email , setEmail] = useState("");
+    const [password , setPassword] = useState("");
+    const dispatch = useDispatch()
+
+    const HandleLogin = async (e) => {
+        e.preventDefault();
+        dispatch(loginStart())
+        try{
+            const res = await axios.post("http://localhost:8080/api/signin" , {name , password});
+            dispatch(loginSuccess(res.data))
+            console.log(res.data);
+        }
+        catch(err){
+            console.log(err);
+            dispatch(loginFailure());
+        }
+    }
+    console.log(store.subscribe.user)
+
   return (
     <Container>
         <Wrapper>
             <Title>Signin</Title>
             <SubTitle>To continue to Youtube</SubTitle>
-            <Input placeholder='username'/>
-            <Input placeholder='password' type='password'/>
-            <Button>Sign In</Button>
+            <Input placeholder='username' onChange={(e) => setName(e.target.value)}/>
+            <Input placeholder='password' type='password' onChange={(e) => setPassword(e.target.value)}/>
+            <Button onClick={HandleLogin}>Sign In</Button>
             <Title>Or</Title>
-            <Input placeholder='username'/>
-            <Input placeholder='email'/>
-            <Input placeholder='password' type='password'/>
+            <Input placeholder='username' onChange={(e) => setName(e.target.value)}/>
+            <Input placeholder='email' onChange={(e) => setEmail(e.target.value)}/>
+            <Input placeholder='password' type='password' onChange={(e) => setPassword(e.target.value)}/>
             <Button>Sign Up</Button>
         </Wrapper>
         <More>

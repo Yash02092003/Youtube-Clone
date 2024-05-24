@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Video = require("../models/Video");
 
 const update = async (req , res , next) => {
     if(req.params.id === req.user.id){
@@ -73,5 +74,35 @@ const unSubscribeUser = async(req , res , next) => {
     }
 }
 
+const like = async (req , res , next) => {
+    const id = req.user.id;
+    const videoId = req.params.videoId;
+    try{
+        await Video.findByIdAndUpdate(videoId , {
+            $addToSet : {likes : id} ,
+            $pull : {dislikes : id}
+        })
+        res.status(200).json('The video has been liked');
+    }
+    catch(e){
+        next(e);
+    }
+}
 
-module.exports = { update , deleteUser , getUser , subscribeUser , unSubscribeUser};
+const dislike = async (req , res , next) => {
+    const id = req.user.id;
+    const video = req.params.videoId;
+    try{
+        await Video.findByIdAndUpdate(video , {
+            $addToSet : {likes : id} ,
+            $pull : {dislikes : id}
+        })
+        res.status(200).json("The video has been disliked");
+    }
+    catch(e){
+        next(e)
+    }
+}
+
+
+module.exports = { update , deleteUser , getUser , subscribeUser , unSubscribeUser , like , dislike};
